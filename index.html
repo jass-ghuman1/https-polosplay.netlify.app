@@ -331,14 +331,14 @@ async function trackVisit(){
   const show=n=>{el.textContent=Number(n).toLocaleString('en-US')};
   show(VISIT_BASE);
   const countedKey='polosplay-visit-counted';
+  const already=sessionStorage.getItem(countedKey);
+  if(!already) sessionStorage.setItem(countedKey,'1');
   try{
-    const already=sessionStorage.getItem(countedKey);
     const path=already?'get':'hit';
-    const res=await fetch('https://abacus.jasoncameron.dev/'+path+'/polosplay-netlify/visitors-v1');
+    const res=await fetch('https://abacus.jasoncameron.dev/'+path+'/polosplay-netlify/visitors-v2');
     if(!res.ok) throw new Error('counter');
     const data=await res.json();
     const value=Math.max(1,Number(data.value)||1);
-    if(!already) sessionStorage.setItem(countedKey,'1');
     show(VISIT_BASE+value-1);
   }catch(e){
     show(VISIT_BASE);
