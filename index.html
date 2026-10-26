@@ -335,7 +335,7 @@ async function trackVisit(){
   if(!already) sessionStorage.setItem(countedKey,'1');
   try{
     const path=already?'get':'hit';
-    const res=await fetch('https://abacus.jasoncameron.dev/'+path+'/polosplay-netlify/visitors-v2');
+    const res=await fetch('https://abacus.jasoncameron.dev/'+path+'/polosplay-netlify/visitors-v3');
     if(!res.ok) throw new Error('counter');
     const data=await res.json();
     const value=Math.max(1,Number(data.value)||1);
