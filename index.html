@@ -58,6 +58,19 @@ input.ans{width:100%;font:600 20px 'Josefin Sans',sans-serif;letter-spacing:.12e
 footer{text-align:center;font-size:14px;color:#7a6e60;margin-top:26px;line-height:1.5}
 footer .f{font:400 10px 'Josefin Sans',sans-serif;letter-spacing:.3em;color:var(--gold);margin-top:8px}
 .hide{display:none}
+.xgrid{display:grid;gap:3px;margin:0 auto 16px;width:max-content;max-width:100%}
+.xcell{width:34px;height:34px;position:relative}
+.xcell.blk{background:transparent}
+.xcell input{width:100%;height:100%;border:1px solid var(--rule);background:#fff;text-align:center;font:600 16px 'Josefin Sans',sans-serif;text-transform:uppercase;color:var(--ink);padding:0;caret-color:var(--gold)}
+.xcell input:focus{outline:2px solid var(--gold);outline-offset:-1px;border-color:var(--gold)}
+.xcell input.ok{background:#eef4ec;border-color:var(--ok);color:var(--ok)}
+.xcell input.bad{background:#f8ece9;border-color:var(--bad);color:var(--bad)}
+.xnum{position:absolute;top:1px;left:3px;font:600 8px 'Josefin Sans',sans-serif;color:var(--gold);pointer-events:none;line-height:1;z-index:1}
+.xclues{margin-top:4px}
+.xclues h3{font:600 11px 'Josefin Sans',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:14px 0 8px}
+.xclues p{font-size:16px;margin:0 0 6px;color:var(--ink);line-height:1.35}
+.xclues .n{color:var(--gold);font-weight:600;margin-right:4px}
+.xmsg{text-align:center;font-style:italic;min-height:22px;margin-top:8px;color:var(--body)}
 </style>
 </head>
 <body>
@@ -125,10 +138,57 @@ const TALK=["What's the best thing you've eaten this year?","If you could open a
 "Which dish from your childhood would you order right now?","If you could live in any decade, which one?","What's the funniest thing that happened to you this week?",
 "What are you most proud of lately?","Mountains, lake or city for a weekend away?","What's a tradition you'd love to start?","Who's the most interesting person you've ever met?","What's one thing everyone at this table should try once?"];
 
+const ALBERTA=[
+{q:"In what year did Alberta become a Canadian province?",a:"1905",o:["1867","1885","1912"],f:"Alberta and Saskatchewan both joined Confederation on September 1, 1905."},
+{q:"Who was Alberta's first premier?",a:"Alexander Rutherford",o:["Frederick Haultain","John A. Macdonald","Peter Lougheed"],f:"Rutherford led the Liberal government from 1905 to 1910."},
+{q:"Which national park, established in 1885, was Canada's first?",a:"Banff National Park",o:["Jasper National Park","Waterton Lakes","Elk Island"],f:"It began as the Banff Hot Springs Reserve after the railway era."},
+{q:"The famous 1947 oil strike that reshaped Alberta happened near which town?",a:"Leduc",o:["Fort McMurray","Red Deer","Medicine Hat"],f:"Leduc No. 1 kicked off the modern oil boom."},
+{q:"Head-Smashed-In Buffalo Jump is a UNESCO site for which people?",a:"Blackfoot",o:["Cree","Métis","Dene"],f:"It was used for thousands of years to hunt bison."},
+{q:"What is Alberta's official provincial flower?",a:"Wild rose",o:["Prairie crocus","Tiger lily","Fireweed"],f:"Rosa acicularis — why we are Wild Rose Country."},
+{q:"The Calgary Stampede was founded in which year?",a:"1912",o:["1905","1923","1899"],f:"Guy Weadick organized the first Stampede."},
+{q:"Alberta's provincial motto Fortis et Liber means what?",a:"Strong and free",o:["Wild and free","Proud and true","Rise and shine"],f:"It appears on the coat of arms."},
+{q:"Which river runs through downtown Edmonton?",a:"North Saskatchewan",o:["Athabasca","Bow","Peace"],f:"The river valley is one of the largest urban parks in North America."},
+{q:"Treaty 7 was signed in 1877 near which present-day city?",a:"Calgary",o:["Edmonton","Lethbridge","Grande Prairie"],f:"Blackfoot Crossing on the Bow River."},
+{q:"Dinosaur Provincial Park is in which Alberta region?",a:"Badlands",o:["Rockies","Boreal forest","Peace Country"],f:"One of the richest fossil beds on Earth."},
+{q:"The Famous Five won a landmark case affirming that women are persons under Canadian law. Where were they based?",a:"Alberta",o:["Ontario","Manitoba","British Columbia"],f:"Emily Murphy, Nellie McClung, and others led the Persons Case."},
+{q:"Fort Edmonton was originally a post for which company?",a:"Hudson's Bay Company",o:["Canadian Pacific","North West Mounted Police","Hudson Oil Co."],f:"It was a key fur-trade hub on the North Saskatchewan."},
+{q:"What mineral made Turner Valley famous in the early 1900s?",a:"Oil and gas",o:["Gold","Coal only","Potash"],f:"Turner Valley was Canada's first major oilfield."},
+{q:"Which Alberta city hosted the 1988 Winter Olympics?",a:"Calgary",o:["Edmonton","Banff","Canmore"],f:"Canada Olympic Park still draws visitors today."}];
+
+const BEER=[
+{q:"What do the letters IPA stand for?",a:"India Pale Ale",o:["International Pale Ale","Irish Pale Ale","Intense Pale Ale"],f:"Hop-forward and often citrusy or piney."},
+{q:"Which ingredient gives beer its bitterness and aroma?",a:"Hops",o:["Malt","Yeast","Barley husks"],f:"Malt brings sweetness; hops balance it."},
+{q:"A stout is best known for tasting like what?",a:"Roasted coffee or chocolate",o:["Banana and clove","Light lemon","Spicy chile"],f:"Dark roasted malts create that flavour."},
+{q:"What does ABV measure?",a:"Alcohol by volume",o:["Average beer value","Ale bitterness value","Amount of barley used"],f:"A typical lager sits around 4–5% ABV."},
+{q:"Lager yeast ferments at which kind of temperature?",a:"Cooler than ale yeast",o:["Much hotter than ale yeast","Exactly the same","Only below freezing"],f:"Cool, slow fermentation keeps lagers crisp."},
+{q:"Which glass is classic for a wheat beer like Hefeweizen?",a:"Tall curved weizen glass",o:["Narrow flute","Dimpled pint mug only","Shot glass"],f:"The shape holds a big foamy head."},
+{q:"What are the four traditional building blocks of beer?",a:"Water, malt, hops, yeast",o:["Water, sugar, salt, hops","Barley, corn, rye, fruit","Malt, hops, cream, spice"],f:"Everything else is a twist on that base."},
+{q:"A flight at a brewery is usually what?",a:"Small tasting pours of several beers",o:["A free pitcher","Only non-alcoholic options","One giant stein"],f:"Perfect for comparing styles side by side."},
+{q:"Which food often pairs well with a bitter IPA?",a:"Spicy or fried dishes",o:["Only vanilla ice cream","Delicate poached fish","Plain oatmeal"],f:"Hops cut through rich, spicy flavours."},
+{q:"What does a 'session' beer usually mean?",a:"Lower ABV, easy to have more than one",o:["Brewed only in winter","Always barrel-aged","Served without foam"],f:"Made for longer table conversations."},
+{q:"Foam on a well-poured pint is called what?",a:"The head",o:["The crown","The collar only","The bloom"],f:"A healthy head traps aroma."},
+{q:"Alberta craft beer culture is especially known for what?",a:"Local brewpubs and hop-forward ales",o:["Only importing European lagers","Banning hops","Serving beer frozen solid"],f:"Prairie brewers lean into bold, fresh flavours."}];
+
+const FOOD_XWORD={
+rows:9,cols:7,
+blocks:[[0,5],[1,1],[1,2],[1,3],[1,4],[1,5],[2,5],[3,1],[3,2],[3,3],[3,4],[3,5],[4,1],[5,0],[5,1],[5,2],[5,3],[5,4],[5,5],[5,6],[6,6],[7,0],[7,1],[7,2],[7,3],[7,4],[7,5],[7,6],[8,5],[8,6]],
+words:[
+{num:1,dir:"across",r:0,c:0,ans:"PIZZA",clue:"Italian classic with cheese and toppings"},
+{num:1,dir:"down",r:0,c:0,ans:"PASTA",clue:"Spaghetti, penne, and linguine belong here"},
+{num:2,dir:"down",r:0,c:6,ans:"TACO",clue:"Soft or hard shell, often with salsa"},
+{num:3,dir:"across",r:2,c:0,ans:"STEAK",clue:"Grilled cut of beef"},
+{num:4,dir:"across",r:4,c:2,ans:"FRIES",clue:"Crispy potato side, great with ketchup"},
+{num:5,dir:"across",r:6,c:0,ans:"NACHOS",clue:"Tortilla chips loaded with cheese"},
+{num:6,dir:"across",r:8,c:0,ans:"BREAD",clue:"Fresh loaf for dipping or sharing"}
+]};
+
 const GAMES=[
 {id:"trivia",ic:"🏆",t:"Sherwood Park Trivia",d:"10 questions on home and Alberta",wide:true},
+{id:"alberta",ic:"🌾",t:"Alberta History",d:"Province stories & landmarks"},
+{id:"beer",ic:"🍺",t:"Beer Quiz",d:"Styles, sips & pairings"},
 {id:"menu",ic:"🍽️",t:"Menu Match",d:"Name the dish"},
 {id:"emoji",ic:"😋",t:"Emoji Eats",d:"Guess it from emojis"},
+{id:"crossword",ic:"🧩",t:"Food Crossword",d:"Fill the food grid",wide:true},
 {id:"scramble",ic:"🔤",t:"Word Scramble",d:"Unscramble the menu"},
 {id:"wyr",ic:"⚖️",t:"Would You Rather",d:"Pick a side"},
 {id:"talk",ic:"💬",t:"Table Talk",d:"Questions for the table",wide:true}];
@@ -167,8 +227,11 @@ let curr='';
 function start(id){
   curr=id; window.scrollTo(0,0);
   if(id==='trivia') quiz('Trivia',shuffle(TRIVIA).slice(0,10),it=>`<p class="q">${esc(it.q)}</p>`);
+  if(id==='alberta') quiz('Alberta History',shuffle(ALBERTA).slice(0,10),it=>`<p class="q">${esc(it.q)}</p>`);
+  if(id==='beer') quiz('Beer Quiz',shuffle(BEER).slice(0,8),it=>`<p class="q">${esc(it.q)}</p>`);
   if(id==='menu') quiz('Menu Match',shuffle(MENU).slice(0,8),it=>`<p class="q">Which dish is this?</p><p class="q" style="font-weight:500;font-style:italic">“${esc(it.q)}”</p>`);
   if(id==='emoji') quiz('Emoji Eats',shuffle(EMOJI).slice(0,8),it=>`<p class="q">Which Polos dish is this?</p><div class="emo">${it.e}</div>`);
+  if(id==='crossword') crossword();
   if(id==='scramble') scramble();
   if(id==='wyr') cards('Would You Rather',shuffle(WYR),p=>`<div class="wyr"><button class="opt">${esc(p[0])}</button><div class="or">OR</div><button class="opt">${esc(p[1])}</button></div>`,true);
   if(id==='talk') cards('Table Talk',shuffle(TALK),t=>`<div class="card">${esc(t)}</div>`,false);
@@ -198,6 +261,66 @@ function scramble(){
     $('#sk').onclick=()=>{$('#h').textContent=`It was ${w}`;setTimeout(()=>{i++;step()},900)};
   };
   step();
+}
+function crossword(){
+  const p=FOOD_XWORD;
+  const block=new Set(p.blocks.map(([r,c])=>r+','+c));
+  const sol={};
+  const nums={};
+  p.words.forEach(w=>{
+    nums[w.r+','+w.c]=w.num;
+    for(let i=0;i<w.ans.length;i++){
+      const r=w.dir==='across'?w.r:w.r+i, c=w.dir==='across'?w.c+i:w.c;
+      sol[r+','+c]=w.ans[i];
+    }
+  });
+  const cells=[];
+  for(let r=0;r<p.rows;r++) for(let c=0;c<p.cols;c++){
+    const k=r+','+c;
+    if(block.has(k)||!sol[k]) cells.push(`<div class="xcell blk"></div>`);
+    else cells.push(`<div class="xcell">${nums[k]?`<span class="xnum">${nums[k]}</span>`:''}<input maxlength="1" data-k="${k}" inputmode="text" autocomplete="off" aria-label="cell ${k}"></div>`);
+  }
+  const across=p.words.filter(w=>w.dir==='across').map(w=>`<p><span class="n">${w.num}.</span>${esc(w.clue)}</p>`).join('');
+  const down=p.words.filter(w=>w.dir==='down').map(w=>`<p><span class="n">${w.num}.</span>${esc(w.clue)}</p>`).join('');
+  $('#app').innerHTML=shell('Food Crossword',`<div class="panel">
+    <div class="xgrid" style="grid-template-columns:repeat(${p.cols},34px)">${cells.join('')}</div>
+    <div class="xclues"><h3>Across</h3>${across}<h3>Down</h3>${down}</div>
+    <p class="xmsg" id="xmsg">Fill the grid — food words only.</p>
+    <button class="btn" id="xcheck">Check answers</button>
+    <button class="btn ghost" id="xreveal">Reveal</button>
+    <button class="btn ghost" onclick="home()">More games</button>
+  </div>`,'Food grid');
+  const inputs=[...document.querySelectorAll('.xcell input')];
+  inputs.forEach((inp,idx)=>{
+    inp.addEventListener('input',()=>{
+      inp.value=(inp.value.match(/[a-z]/i)||[''])[0].toUpperCase();
+      inp.classList.remove('ok','bad');
+      if(inp.value&&idx+1<inputs.length) inputs[idx+1].focus();
+    });
+    inp.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!inp.value&&idx>0){inputs[idx-1].focus();e.preventDefault()}
+      if(e.key==='ArrowLeft'&&idx>0) inputs[idx-1].focus();
+      if(e.key==='ArrowRight'&&idx+1<inputs.length) inputs[idx+1].focus();
+    });
+  });
+  $('#xcheck').onclick=()=>{
+    let right=0,filled=0;
+    inputs.forEach(inp=>{
+      const v=inp.value.trim().toUpperCase();
+      if(!v){inp.classList.remove('ok','bad');return}
+      filled++;
+      if(v===sol[inp.dataset.k]){inp.classList.add('ok');inp.classList.remove('bad');right++}
+      else{inp.classList.add('bad');inp.classList.remove('ok')}
+    });
+    const total=inputs.length;
+    if(right===total) $('#xmsg').textContent='Perfect — chef of the crossword.';
+    else if(!filled) $('#xmsg').textContent='Enter some letters first.';
+    else $('#xmsg').textContent=`${right} of ${total} letters correct.`;
+  };
+  $('#xreveal').onclick=()=>{
+    inputs.forEach(inp=>{inp.value=sol[inp.dataset.k];inp.classList.remove('bad');inp.classList.add('ok')});
+    $('#xmsg').textContent='Revealed. Hungry for another round?';
+  };
 }
 home();
 </script>
